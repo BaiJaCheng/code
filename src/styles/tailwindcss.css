@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*解决css权重过低 被tail样式覆盖*/
+@layer base {
+    button, [type="button"], [type="reset"], [type="submit"] {
+        background-color: var(--n-color)
+    }
+}
