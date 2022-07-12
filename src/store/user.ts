@@ -52,6 +52,15 @@ export const useUserStore = defineStore({
 
         //获取角色的时候调用的方法
         getUserInfo():Object{
+            //判断 this.info 是否是空对象 
+            // if(this.info?.id) {
+            //     console.log('123123');
+            // }else{
+            //     console.log('333333');
+                
+            // }
+
+
             return this.info;
         }
     },

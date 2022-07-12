@@ -1,18 +1,19 @@
 <template>
   <div class="pt-4">
-    <!-- <div class="m-0">
+    <div class="m-0">
       <img class="m-auto" src="~@/assets/images/logo.png"  alt="logo"/>
     </div>
-    <n-menu :options="menuOptions" inverted @update:value="handleUpdateValue" /> -->
+      <!--  菜单的数据绑定                           选中时回调   -->
+    <n-menu :options="menuOptions" inverted @update:value="handleUpdateValue" />
 
-    <!--    <n-menu-->
-<!--        :inverted="true"-->
-<!--        :collapsed-width="64"-->
-<!--        :collapsed-icon-size="22"-->
-<!--        :options="menuOptions"-->
-<!--        @update:value="selectMenu"-->
-<!--        :value="routeKey"-->
-<!--    />-->
+       <!-- <n-menu
+       :inverted="true"
+        :collapsed-width="64"
+      :collapsed-icon-size="22"
+     :options="menuOptions"
+        @update:value="selectMenu"
+      :value="routeKey"
+ /> -->
   </div>
 </template>
 
@@ -32,6 +33,26 @@
 // const handleUpdateValue=(key,item) =>{
 //     router.push({name:key})
 // }
+import { NIcon } from 'naive-ui'
+import { defineComponent, h, Component } from 'vue'
+import type { MenuOption } from 'naive-ui'
+import { renderIcon } from '@/utils';
+import { generatorMenu } from '@/utils'
+import { routeModuleList } from '@/router/index'
+import { useRoute, useRouter } from 'vue-router'
+// import { generate } from '@vue/compiler-core';
+// import { ro } from 'date-fns/locale';
+const router = useRouter()
+const route   = useRoute()
+
+console.log(routeModuleList,'routeModuleList');
+
+const handleUpdateValue = (key, item) => {
+  console.log(key, item);
+  router.push({ name: key })
+}
+
+
 // const menuOptions: MenuOption[] = [
 //   {
 //     label: '首页',
@@ -65,7 +86,7 @@
 //     label: '1973年的弹珠玩具',
 //     key: 'pinball-1973',
 //     icon: renderIcon(BookIcon),
-//     disabled: true,
+//     // disabled: true,
 //     children: [
 //       {
 //         label: '鼠',
@@ -129,6 +150,7 @@
 //     ]
 //   }
 // ]
+const menuOptions =  generatorMenu(routeModuleList);
 
 // import router, {routeModuleList} from '@/router/index';
 // console.log(generatorMenu(routeModuleList),123);

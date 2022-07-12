@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-14 flex items-center  overflow-hidden justify-end px-8 shadow shadow-md shadow-sky-500"   style="border-bottom: 1px solid #ccc">
     <!-- 头像 -->
-    <!-- <n-dropdown :options="options" @select="select">
+    <n-dropdown :options="options" @select="select">
       <div class="flex items-center">
         <n-avatar
             round
@@ -12,43 +12,45 @@
                         超级管理员
                       </span>
       </div>
-    </n-dropdown>-->
+    </n-dropdown>
   </div> 
 </template>
 
 <script lang="ts" setup>
-// import {ref} from "vue";
-// import {renderIcon} from "@/utils";
-// import {logout} from '@/api/auth';
-// import {
-//   LogOutOutline as LogoutIcon
-// } from '@vicons/ionicons5'
-
-// import {useUserStore} from '@/store/user';
-// const userStore = useUserStore()
-// userStore.value.getUserInfo()
-
-// const options = ref([
-//   {
-//     label: '退出登录',
-//     key: 'logout',
-//     icon: renderIcon(LogoutIcon)
-//   }
-// ])
+import {ref} from 'vue'
+import {renderIcon} from "@/utils";
+import {logout} from '@/api/auth';
+import { useUserStore } from '@/store/user';
+import { LogOutOutline as LogoutIcon} from '@vicons/ionicons5'
 
 
-// const select = (key:string) =>{
-//       switch (key) {
-//         case 'logout':
-//           logout().then(()=>{
-//             localStorage.removeItem('token');
-//             window.location.reload();
-//           })
-//           break;
-//         default:
-//           break;
-//       }
-// }
+const userStore = useUserStore();
+// userStore.value.getUserInfo();
+
+
+
+
+const options = ref([
+  {
+    label: '退出登录',
+    key: 'logout',
+    icon: renderIcon(LogoutIcon)
+  }
+])
+
+
+const select = (key:string) =>{
+      switch (key) {
+        case 'logout':
+          logout().then(()=>{
+            localStorage.removeItem('token');
+            window.location.reload();
+          })
+          break;
+        default:
+          break;
+      }
+}
 </script>
 
 <style scoped>

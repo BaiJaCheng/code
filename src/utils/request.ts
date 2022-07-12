@@ -35,9 +35,43 @@ request.interceptors.request.use((config)=>{
 
 //响应拦截
 request.interceptors.response.use((response)=>{
-    console.log(response)
+ 
     return response.data ? response.data : response;
 },(error)=>{
+    //
+    const {response} = error;
+    //根据响应状态码进行处理 肯定不是200
+    switch(response.status) {
+
+        case 401 : 
+        window.$message.error('登陆失败，请重新登录')
+        //清除token
+        localStorage.removeItem('token');
+        //延迟跳转到登录页面
+        setTimeout(()=>{
+            window.location.href = '/login';
+        },500);
+            break;
+
+        case 404:
+            window.$message.error('接口不存在')
+            break;
+
+        case 500:
+            window.$message.error('网络异常')
+            break;
+
+        case 502:
+            window.$message.error('网络异常')
+            break;
+
+        case 422:
+            window.$message.error('参数不存在')
+            break;
+
+    }
+    
+    
     return Promise.reject(error)
 })
 

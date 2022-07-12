@@ -1,11 +1,31 @@
-import {createRouter, createWebHistory} from "vue-router";
+import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 import Home from "@/views/Home.vue";
 import Login from "@/views/login/index.vue";
-import dashboard from "@/router/modules/dashboard";
 
+
+
+//相当于我们把他们合并成了一个大的数组 
+// 创建路由器实例，并且配置路由规则 
+const modules = import.meta.globEager('./modules/**/*.ts');
+// console.log(modules);
+const routeModuleList : RouteRecordRaw[] = [];
+//遍历路由模块
+Object.keys(modules).forEach((key)=>{
+    const mod = modules[key].default || {};
+    const modList = Array.isArray(mod) ? [...mod] : [mod];
+    routeModuleList.push(...modList);
+})
+console.log(routeModuleList,'routeModuleList');
+
+
+
+// import dashboard from "@/router/modules/dashboard";
+// import user from "@/router/modules/user";
+// import order from "@/router/modules/order";
+//
 export const routes = [
     { path: '/',
-     component: Home 
+     component: Home
     },
 
     { path: '/login',
@@ -15,17 +35,17 @@ export const routes = [
         title:'登录'
      }
     },
-    
-    
+
+
 ]
 
 //解构路由
-const baseRoutes = [...routes,...dashboard]
+const baseRoutes = [...routes,...routeModuleList]
 console.log(baseRoutes);
 
 
 //逐个抛出
-export const router = createRouter({
+ const router = createRouter({
     // 4. Provide the history implementation to use. We are using the hash history for simplicity here.
     history: createWebHistory(),
     routes:baseRoutes, // short for `routes: routes`
@@ -58,6 +78,6 @@ router.beforeEach((to,from,next)=>{
 
 //判断如果存在redirect
 
-
-
-
+//将routeModuleList抛出去
+export {routeModuleList}
+export default router

@@ -59,6 +59,11 @@
   import { PersonOutline,LockClosedOutline  } from "@vicons/ionicons5";
   import {useUserStore} from "../../store/user";
   import { useRouter,useRoute } from "vue-router";
+  import { useMessage } from 'naive-ui'
+
+ const message = useMessage()
+ window.$message = useMessage()
+ 
 
 
 
@@ -114,15 +119,18 @@
 
       //发送请求 执行登录操作
     userStore.login(data).then(res=>{
+    
+     
      //关闭登录中
      loading.value = false;
+      message.success('登录成功')
       console.log(res);
      //弹出登录成功的提示
-     alert('登陆成功');
+    //  alert('登陆成功');
+     
      //跳转到首页(导航页) 两种方式
 
-      // router.push({name:'dashboard'})
-      window.location.href='/dashboard'
+      router.push({name:'dashboard'})
 
 
 
@@ -130,8 +138,9 @@
     }).catch(err=>{
       //关闭登录中
       loading.value = false;
+      message.error('登陆失败');
       //弹出登录失败的提示
-      alert('登陆失败');
+      // alert('登陆失败');
     });
 
     })

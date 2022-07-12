@@ -23,12 +23,12 @@ export function user(){
     )
 }
 
-
+//退出登录
 export function logout(){
     return request(
         {
-            url:'/api/admin/user',
-            method:'GET'
+            url:'/api/auth/logout',
+            method:'post'
         }
     )
 
