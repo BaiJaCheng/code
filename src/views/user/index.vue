@@ -26,14 +26,20 @@
         </n-form-item>
       
         <n-form-item class="ml-auto">
-          <n-button attr-type="button" @click="handleValidateClick">
+           <n-button class="mr-4"  attr-type="button" @click="searchReload">
+            重置
+          </n-button>
+          <n-button type="info"  attr-type="button" @click="searchSubmit">
             搜索
           </n-button>
         </n-form-item>
   </n-form>
       </div>
       <div class="mt-4 bg-white">
-            <div class="text-xl pl-4 py-4">用户列表</div>
+            <div class="text-xl pl-4 py-4 flex px-6">
+              <span>用户列表</span>
+              <span class="ml-auto"><NButton type="info" @click="showModal = true">+新建</NButton></span>
+            </div>
             <div>
               <n-data-table
               :columns="columns"
@@ -44,82 +50,143 @@
             </div>
 
             <div class="p-4 flex justify-end pr-10">  
-               <n-pagination v-model:page="page" :page-count="100" />
+               <n-pagination v-model:page="page" @update:page="updatePage" :page-count="totalPage"  />
             </div>
       </div>
+      <AddUser :showModal="showModal" @checkShowModal="checkShowModal"></AddUser>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { h,ref} from 'vue'
-import { NButton, useMessage } from 'naive-ui'
+import { h,ref,onMounted, render} from 'vue'
+import { NButton, useMessage ,NAvatar,NSwitch} from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
+import {users} from '@/api/user'
+import AddUser from './components/AddUser.vue'
 
+const totalPage = ref(0)
 const message = useMessage()
-const page = ref('1')
+const page = ref('')
+const showModal = ref(false)
 const formSearch = ref({
   name:'',
   email:'',
 
 })
+const data = ref([])   
 
-type Song = {
-  no: number
-  title: string
-  length: string
-}
-
-const createColumns = ({
-  play
-}: {
-  play: (row: Song) => void
-}): DataTableColumns<Song> => {
-  return [
+const columns =  [
     {
-      title: 'No',
-      key: 'no'
-    },
-    {
-      title: 'Title',
-      key: 'title'
-    },
-    {
-      title: 'Length',
-      key: 'length'
-    },
-    {
-      title: 'Action',
-      key: 'actions',
-      render (row) {
-        return h(
-          NButton,
-          {
-            strong: true,
-            tertiary: true,
-            size: 'small',
-            onClick: () => play(row)
-          },
-          { default: () => 'Play' }
-        )
+      title: '头像',
+      key: 'avatar_url',
+      //通过使用 h 来创建一个组件 ,h可以创建一个组件或者一个虚拟节点
+      render(row){
+        //给h里面的组件传递一个属性
+        return h(NAvatar,{round:true,src:row.avatar_url})
       }
-    }
+    },
+    {
+      title: '姓名',
+      key: 'name'
+    },
+    {
+      title: '邮箱',
+      key: 'email'
+    },
+    {
+      title: '是否禁用',
+      key: 'is_locked',
+      render(row){    //给h里面的组件传递一个属性
+        return h(NSwitch,
+        {
+          size:'medium',
+          color:'#1890ff',
+          activeColor:'#52c41a',
+          inactiveColor:'#d9d9d9',
+          activeValue:1,
+          inactiveValue:0,
+          //值为1时为假否则为true
+          value:row.is_locked == 1 ? false : true,
+          onClick:()=>{
+          //将值更改
+          row.is_locked = row.is_locked == 1 ? 0 : 1
+          }
+        })}
+    },
+    {
+      title:'创建时间',
+      key:'created_at'
+    },
+    {
+      title:'操作',
+      key:'created_at',
+      render(row){
+
+        return h(NButton,{
+          size:'small',
+          color:'#1890ff',
+          strong:true,
+          onClick:()=>{
+              message.info('正在编辑'+row.name )
+          }
+        },'编辑')
+      }
+    },
   ]
-}
 
-const data: Song[] = [
-  { no: 3, title: 'Wonderwall', length: '4:18' },
-  { no: 4, title: "Don't Look Back in Anger", length: '4:48' },
-  { no: 12, title: 'Champagne Supernova', length: '7:27' }
-]
 
-const columns = createColumns({
-        play (row: Song) {
-          message.info(`Play ${row.title}`)
-        }
-      })
 
 const  pagination =  ref(false as const)
+
+//初始化数据
+onMounted(()=>{
+ getUserList({})
+})
+
+//获取某一页的数据
+const updatePage = (pageNum) => {
+  //我们点击那一页就会获取到那一页的数据
+  // console.log(page)
+  getUserList({current:pageNum,
+  name:formSearch.value.name,
+  email:formSearch.value.email
+  })
+}
+
+//搜索查询功能
+const searchSubmit = (e) => {
+  e.preventDefault();
+  getUserList({
+    name:formSearch.value.name,
+    email:formSearch.value.email,
+    current:1
+  })
+}
+
+//重置
+const searchReload = ()=>{
+  getUserList({})
+  //将参数重置为空
+  formSearch.value = {
+    name:'',
+    email:'',
+  }
+}
+
+const checkShowModal = (status)=>{
+  showModal.value = status
+}
+
+//整合出来的users 方便维护
+const getUserList = (params)=>{
+  users(params).then(users =>{
+    // console.log(users);
+    data.value = users.data
+    totalPage.value = users.meta.pagination.total_pages
+    page.value = users.meta.pagination.current_page
+  })
+}
 </script>
 
 <style scoped>
