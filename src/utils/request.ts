@@ -66,7 +66,14 @@ request.interceptors.response.use((response)=>{
             break;
 
         case 422:
-            window.$message.error('参数不存在')
+            //422错误处理
+            //获取错误信息 
+            let msg = response.data.errors[Object.keys(response.data.errors)[0]][0]
+
+            //显示具体错误
+            window.$message.error(msg)
+
+            // window.$message.error('参数不存在')
             break;
 
     }

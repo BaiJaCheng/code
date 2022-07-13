@@ -2,9 +2,9 @@
   <div>
     <div class="h-24 w-full bg-white p-3 mb-6">
       <div>
-        <span class="text-slate-400 pr-1">首页</span>/ <span class="pl-1">用户管理</span>
+        <span class="text-slate-400 pr-1">首页</span>/ <span class="pl-1">轮播图管理</span>
         <div class="pt-3 text-xl text-black font-bold">
-          用户管理
+          轮播图管理
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
       </div>
       <div class="mt-4 bg-white">
             <div class="text-xl pl-4 py-4 flex px-6">
-              <span>用户列表</span>
+              <span>轮播图列表</span>
               <span class="ml-auto"><NButton type="info" @click="showModal = true">+新建</NButton></span>
             </div>
             <div>
@@ -53,23 +53,21 @@
                <n-pagination v-model:page="page" @update:page="updatePage" :page-count="totalPage"   />
             </div>
       </div>
-      <AddUser :showModal="showModal" @checkShowModal="checkShowModal" @reloadTable="reload"></AddUser>
-       <EditUser v-if="showEditModal" :user_id ='user_id' :showModal="showEditModal" @checkShowModal="checkEditModal" @reloadTable="reload"></EditUser>
+      <AddSlide :showModal="showModal" @checkShowModal="checkShowModal" @reloadTable="reload"></AddSlide>
+       
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { h,ref,onMounted, render} from 'vue'
-import { NButton, useMessage ,NAvatar,NSwitch, useLoadingBar} from 'naive-ui'
-import type { DataTableColumns } from 'naive-ui'
+import { NButton,NAvatar,NSwitch, useLoadingBar} from 'naive-ui'
 import {users} from '@/api/user'
-import AddUser from './components/AddUser.vue'
-import EditUser from './components/EditUser.vue'
+import AddSlide from './components/AddSlide.vue'
+
 
 
 const totalPage = ref(0)
-const message = useMessage()
 const page = ref('')
 //添加模态框
 const showModal = ref(false)
@@ -78,9 +76,7 @@ const showEditModal = ref(false)
 
 const user_id = ref('')
 
-const checkEditModal = (show:boolean)=>{
-  showEditModal.value = show
-}
+
 
 const loadingBar = useLoadingBar()
 const formSearch = ref({

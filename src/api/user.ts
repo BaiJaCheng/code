@@ -23,3 +23,23 @@ export function addUser(data){
         data
     })
 }
+
+
+//编辑用户id
+export function getUserInfo(userid){
+    return request({
+        url:`/api/admin/users/${userid}`,
+        method:'GET'
+
+    })
+}
+
+
+
+export function updateUser(userid,data){
+    return request({
+        url:`/api/admin/users/${userid}`,
+        method:'PUT',
+        data
+    })
+}

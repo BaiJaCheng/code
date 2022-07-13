@@ -5,7 +5,7 @@
   >
     <n-card
         style="width: 600px"
-        title="添加用户"
+        title="编辑用户"
         :bordered="false"
         size="huge"
         role="dialog"
@@ -14,7 +14,7 @@
       <template #header-extra>
        <span @click="$emit('checkShowModal',false)">x</span>
       </template>
-         <n-form ref="formRef" :model="model" :rules="rules">
+         <n-form v-if="showForm" ref="formRef" :model="model" :rules="rules">
             <n-form-item path="name" label="姓名">
          <n-input v-model:value="model.name" placeholder="请输入姓名" />
            </n-form-item>
@@ -25,15 +25,7 @@
       />
           </n-form-item>
 
-            <n-form-item
-            path="Password"
-            label="密码"
-            >
-            <n-input
-                v-model:value="model.password" placeholder="请输入密码"
-                type="password"
-            />
-            </n-form-item>
+        
             <n-row :gutter="[0, 24]">
             <n-col :span="24">
                 <div style="display: flex; justify-content: flex-end">
@@ -50,27 +42,43 @@
             </n-col>
             </n-row>
   </n-form>
+      <n-skeleton v-else text :repeat="2" />
     </n-card>
   </n-modal>
 </template>
 
 <script setup>
-import {h,ref,defineProps,defineEmits} from "vue";
-import { addUser } from '@/api/user';
+import {h,ref,defineProps,defineEmits,onMounted} from "vue";
+import { addUser ,getUserInfo,updateUser} from '@/api/user';
 
 const props = defineProps({
     showModal:{
         type:Boolean,
         default:false
+    },
+    user_id:{
+      type:String,
+      default:''
     }
 })
 
-const emit = defineEmits(['checkShowModal',])
+const emit = defineEmits(['checkShowModal','shuaxin'])
+const showForm = ref(false)
+onMounted(()=>{
+   
+  if(props.user_id){
+    getUserInfo(props.user_id).then(res=>{
+      model.value.name = res.name;
+      model.value.email = res.email;
+      showForm.value = true;
+    })
+  }
+})
 
  const model = ref({
       name: null,
       email: null,
-      password: null
+
     })
  const rules = {
         name: [
@@ -82,13 +90,7 @@ const emit = defineEmits(['checkShowModal',])
           message: '请输入邮箱',
         }
       ],
-        password: [
-        {
-          required: true,
-          message: '请输入密码',
-        },
- 
-      ]
+      
     }
 
 const formRef = ref();
@@ -100,10 +102,11 @@ const userSubmit =(e)=> {
         if(errors){
             console.log(errors);
         }else{
-            addUser(model.value).then(res=>{
-            //将新添加的用户添加到用户列表中 并关闭弹窗
+            updateUser(props.user_id,model.value).then(res=>{
+              window.$message.success('修改成功')
+            //将修改用户添加到用户列表中 并关闭弹窗
               emit('checkShowModal',false)
-              //添加完成后自动刷新页面 因为我们在user/index下面已经写入了这个方法，在这里写入emit中一调用即可
+              //修改完成后自动刷新页面 因为我们在user/index下面已经写入了这个方法，在这里写入emit中一调用即可
               emit('reloadTable')
             })
         }
