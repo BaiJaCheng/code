@@ -39,11 +39,9 @@
               </n-form-item>
 
                <n-form-item label="图片上传" path="img">
-                <n-upload 
-                  :custom-request="customRequest"
-                >
-                    <n-button>上传文件</n-button>
-                </n-upload>
+              <upload @backKey="backKey"></upload>
+
+
               </n-form-item>
 
        
@@ -122,6 +120,7 @@ const emit = defineEmits(['checkShowModal',])
 const formRef = ref();
 const showModal = ref(false)
 
+
 const slideSubmit =(e)=> {
     e.preventDefault()
      console.log(model.value);
@@ -142,42 +141,10 @@ const slideSubmit =(e)=> {
     })
 }
 
-const customRequest = ({file,action,heider,onFinish,onError})=>{
-  //首先拿到钥匙 在手册ossToken中
-  uploadToken().then(res=>{
-    //图片上传逻辑
-    console.log(res);
-
-    //组装上传的参数 
-    const formData = new FormData();
-    //随机生成图片名称 带有时间戳 根据 file.name 来获取文件的后缀名
-    const fileName = `${Date.now()}${Math.floor(Math.random()*1000)}.${file.name.split('.').pop()}`;
-    // let fileName =  Math.random().toString(36).substr(2, 5) + file.name;
-  
-    formData.append('key',file.name);
-    formData.append('policy',res.policy);
-    formData.append('OSSAccessKeyId',res.accessid);
-    formData.append('signature',res.signature);
-    formData.append('file',file.file);
-    //发送请求
-    console.log(FormData);
-    //进行上传通过axios发送请求
-    axios.post(res.host,formData,{
-      headers:{
-        'Content-Type':'multipart/form-data'
-      }
-    }).then(res=>{
-      console.log(res,'res');
-      //上传成功后的回调
-      model.value.img = fileName;
-      //上传成功后调用onFinish
-      onFinish(fileName);
-    }).catch(err=>{
-      // onError(err);
-    })
-  })
-  
+const backKey =(key)=>{
+  model.value.img= key;
 }
+
 
 
 //路由的验证规则
